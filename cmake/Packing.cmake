@@ -1,4 +1,5 @@
 # these are cache variables, so they could be overwritten with -D,
+# For more info https://cmake.org/cmake/help/v3.7/module/CPackDeb.html
 set(
     CPACK_PACKAGE_NAME ${PROJECT_NAME}
     CACHE STRING "The resulting package name"
@@ -8,6 +9,8 @@ set(
     CPACK_PACKAGE_DESCRIPTION_SUMMARY "Simple C++ application"
     CACHE STRING "Package description for the package metadata"
 )
+set(CPACK_GENERATOR "DEB")
+
 set(CPACK_PACKAGE_VENDOR "Some Company")
 
 set(CPACK_VERBATIM_VARIABLES YES)
@@ -41,11 +44,12 @@ set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
 # that is if you want every group to have its own package,
 # although the same will happen if this is not set (so it defaults to ONE_PER_GROUP)
 # and CPACK_DEB_COMPONENT_INSTALL is set to YES
-set(CPACK_COMPONENTS_GROUPING ALL_COMPONENTS_IN_ONE)#ONE_PER_GROUP)
+# set(CPACK_COMPONENTS_GROUPING ALL_COMPONENTS_IN_ONE)#ONE_PER_GROUP)
+set(ONE_PER_GROUP)
 # without this you won't be able to pack only specified component
 set(CPACK_DEB_COMPONENT_INSTALL YES)
 # list dependencies
-set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS YES)
+# set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS YES)
 
 include(CPack)
 
@@ -72,3 +76,11 @@ include(CPack)
 # can be also set as -DCPACK_COMPONENTS_ALL="AnotherLibrary"
 #set(CPACK_COMPONENTS_ALL "AnotherLibrary")
 message(STATUS "Components to pack: ${CPACK_COMPONENTS_ALL}")
+
+# Example of dependency library ninstall
+set(CPACK_DEBIAN_${PROJECT_NAME}_PACKAGE_DEPENDS "libunwind8")
+# Example of pre deployment, post uninstall scripts
+# https://www.debian.org/doc/debian-policy/ch-maintainerscripts
+set(CPACK_DEBIAN_${PROJECT_NAME}_PACKAGE_CONTROL_EXTRA 
+        "${CMAKE_CURRENT_SOURCE_DIR}/deb/preinst;${CMAKE_CURRENT_SOURCE_DIR}/deb/postinst;${CMAKE_CURRENT_SOURCE_DIR}/deb/prerm;${CMAKE_CURRENT_SOURCE_DIR}/deb/postrm")
+
